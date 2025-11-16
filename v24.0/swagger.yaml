@@ -1,0 +1,377 @@
+swagger: '2.0'
+info:
+  title: instagram Media Insights API
+  description: These APIs provide services for interacting with the instagram media insights api.
+  version: '2.4.0'
+host: graph.facebook.com 
+schemes:
+  - https
+basePath: /v24.0
+produces:
+  - application/json
+consumes:
+  - application/json
+securityDefinitions:
+  access_token:
+    type: apiKey
+    name: access_token
+    in: query
+    description: Instagram Graph API Page access token. See https://developers.facebook.com/docs/facebook-login/guides/access-tokens/#pagetokens.
+security:
+  - access_token: []
+paths:
+  /{instagram_media_id}/insights:
+    get:
+      summary: Get insights data on an Instagram Media object.
+      description: |
+        Get insights data on an Instagram Media object.
+        
+        Limitations:
+        - If insights data you are requesting does not exist or is currently unavailable, the API returns an empty data set instead of 0 for individual metrics.
+        - Data used to calculate metrics can be delayed up to 48 hours.
+        - Metrics data is stored for up to 2 years.
+        - The API only reports organic interaction metrics; interactions on ads containing a media object are not counted.
+        - Story media metrics are only available for 24 hours.
+        - Story media metrics with values less than 5 return an error code 10.
+      tags:
+        - insights
+      operationId: GetInsightsByMediaID
+      parameters:
+        - $ref: '#/parameters/instagramMediaId'
+        - $ref: '#/parameters/metric'
+        - $ref: '#/parameters/period'
+        - $ref: '#/parameters/metricType'
+        - $ref: '#/parameters/breakdown'
+        - $ref: '#/parameters/requestId'
+      responses:
+        '200':
+          description: Return matched Instagram Media insights.
+          schema:
+            $ref: '#/definitions/InstagramMediaInsights'
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '403':
+          $ref: '#/responses/403'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
+
+parameters:
+  query:
+    name: q
+    description: Query string to query resources. Supported query patterns are "exact match(k=v)", "fuzzy match(k=~v)", "range(k=[min~max])", "list with union releationship(k={v1 v2 v3})" and "list with intersetion relationship(k=(v1 v2 v3))". The value of range and list can be string(enclosed by " or '), integer or time(in format "2020-04-09 02:36:00"). All of these query patterns should be put in the query string "q=xxx" and splitted by ",". e.g. q=k1=v1,k2=~v2,k3=[min~max]
+    in: query
+    type: string
+    required: false
+  sort:
+    name: sort
+    description: Sort the resource list in ascending or descending order. e.g. sort by field1 in ascending order and field2 in descending order with "sort=field1,-field2"
+    in: query
+    type: string
+    required: false
+  page:
+    name: page
+    in: query
+    type: integer
+    format: int64
+    required: false
+    description: The page number
+    default: 1
+  pageSize:
+    name: page_size
+    in: query
+    type: integer
+    format: int64
+    required: false
+    description: The size of per page
+    default: 10
+    maximum: 100
+  requestId:
+    name: X-Request-Id
+    description: An unique ID for the request
+    in: header
+    type: string
+    required: false
+    minLength: 1
+  resourceNameInLocation:
+    name: X-Resource-Name-In-Location
+    description: The flag to indicate whether to return the name of the resource in Location. When X-Resource-Name-In-Location is true, the Location will return the name of the resource.
+    in: header
+    type: boolean
+    required: false
+    default: false
+  instagramMediaId:
+    name: instagram_media_id
+    in: path
+    description: Instagram Media ID
+    required: true
+    type: string
+  metric:
+    name: metric
+    in: query
+    description: |
+      Required. Comma-separated list of metrics you want returned. Available metrics include:
+      - clips_replays_count (REELS - deprecated)
+      - comments (FEED, REELS)
+      - follows (FEED, STORY)
+      - ig_reels_aggregated_all_plays_count (REELS - deprecated)
+      - ig_reels_avg_watch_time (REELS)
+      - ig_reels_video_view_total_time (REELS)
+      - impressions (FEED, STORY - deprecated for new media)
+      - likes (FEED, REELS)
+      - navigation (STORY)
+      - plays (REELS - deprecated)
+      - profile_activity (FEED, STORY)
+      - profile_visits (FEED, STORY)
+      - reach (FEED, REELS, STORY)
+      - replies (STORY)
+      - saved (FEED, REELS)
+      - shares (FEED, REELS, STORY)
+      - total_interactions (FEED, REELS, STORY)
+      - views (FEED, REELS, STORY)
+    required: true
+    type: string
+  period:
+    name: period
+    in: query
+    description: |
+      Required. Comma-separated list of time periods you want returned. Values can be:
+      - day
+      - week
+      - days_28
+      - month
+      - lifetime
+      - total_over_range
+    required: true
+    type: string
+  breakdown:
+    name: breakdown
+    in: query
+    description: |
+      Designates how to break down results into subsets. Values can be:
+      - action_type (only compatible with profile_activity metric)
+      - story_navigation_action_type (only compatible with navigation metric)
+    required: false
+    type: string
+  metricType:
+    name: metric_type
+    in: query
+    description: |
+      The type of metric. Values can be:
+      - total_value (for certain metrics like likes, comments, shares)
+      - time_series
+    required: false
+    type: string
+
+responses:
+  '200':
+    description: Success
+    headers:
+      X-Request-Id:
+        description: The ID of the corresponding request for the response
+        type: string
+  '201':
+    description: Created
+    headers:
+      X-Request-Id:
+        description: The ID of the corresponding request for the response
+        type: string
+      Location:
+        description: The location of the resource
+        type: string
+  '202':
+    description: Accepted
+    headers:
+      X-Request-Id:
+        description: The ID of the corresponding request for the response
+        type: string
+  '400':
+    description: Bad request
+    headers:
+      X-Request-Id:
+        description: The ID of the corresponding request for the response
+        type: string
+    schema:
+      $ref: '#/definitions/Errors'
+  '401':
+    description: Unauthorized
+    headers:
+      X-Request-Id:
+        description: The ID of the corresponding request for the response
+        type: string
+    schema:
+      $ref: '#/definitions/Errors'
+  '403':
+    description: Forbidden
+    headers:
+      X-Request-Id:
+        description: The ID of the corresponding request for the response
+        type: string
+    schema:
+      $ref: '#/definitions/Errors'
+  '404':
+    description: Not found
+    headers:
+      X-Request-Id:
+        description: The ID of the corresponding request for the response
+        type: string
+    schema:
+      $ref: '#/definitions/Errors'
+  '405':
+    description: Method not allowed
+    headers:
+      X-Request-Id:
+        description: The ID of the corresponding request for the response
+        type: string
+    schema:
+      $ref: '#/definitions/Errors'
+  '409':
+    description: Conflict
+    headers:
+      X-Request-Id:
+        description: The ID of the corresponding request for the response
+        type: string
+    schema:
+      $ref: '#/definitions/Errors'
+  '412':
+    description: Precondition failed
+    headers:
+      X-Request-Id:
+        description: The ID of the corresponding request for the response
+        type: string
+    schema:
+      $ref: '#/definitions/Errors'
+  '415':
+    description: Unsupported MediaType
+    headers:
+      X-Request-Id:
+        description: The ID of the corresponding request for the response
+        type: string
+    schema:
+      $ref: '#/definitions/Errors'
+  '422':
+    description: Unsupported Type
+    headers:
+      X-Request-Id:
+        description: The ID of the corresponding request for the response
+        type: string
+    schema:
+      $ref: '#/definitions/Errors'
+  '500':
+    description: Internal server error
+    headers:
+      X-Request-Id:
+        description: The ID of the corresponding request for the response
+        type: string
+    schema:
+      $ref: '#/definitions/Errors'
+
+definitions:
+  Errors:
+    description: The error array that describe the errors got during the handling of request
+    type: object
+    properties:
+      errors:
+        type: array
+        items:
+          $ref: '#/definitions/Error'
+  Error:
+    description: a model for all the error response coming from harbor
+    type: object
+    properties:
+      code:
+        type: string
+        description: The error code
+      message:
+        type: string
+        description: The error message
+  InstagramMediaInsights:
+    type: object
+    properties:
+      data:
+        type: array
+        description: An array containing an object describing your request results
+        items:
+          $ref: '#/definitions/InsightData'
+      paging:
+        $ref: '#/definitions/Paging'
+  InsightData:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Metric name
+      period:
+        type: string
+        description: Period requested. Period is automatically set to lifetime in the request and cannot be changed, so this value will always be lifetime
+      values:
+        type: array
+        description: An array containing an object describing requested metric values
+        items:
+          $ref: '#/definitions/MetricValue'
+      title:
+        type: string
+        description: Metric title
+      description:
+        type: string
+        description: Metric description
+      id:
+        type: string
+        description: A string describing the query's path parameters
+      total_value:
+        $ref: '#/definitions/TotalValue'
+  MetricValue:
+    type: object
+    properties:
+      value:
+        type: integer
+        description: Sum of requested metric values
+  TotalValue:
+    type: object
+    description: Object describing requested breakdown values (if breakdowns were requested)
+    properties:
+      value:
+        type: integer
+        description: Sum of requested breakdown values
+      breakdowns:
+        type: array
+        description: An array of objects describing the breakdowns requested and their results
+        items:
+          $ref: '#/definitions/Breakdown'
+  Breakdown:
+    type: object
+    properties:
+      dimension_keys:
+        type: array
+        description: Array of strings describing breakdowns requested
+        items:
+          type: string
+      results:
+        type: array
+        description: An array of objects describing each breakdown set
+        items:
+          $ref: '#/definitions/BreakdownResult'
+  BreakdownResult:
+    type: object
+    properties:
+      dimension_values:
+        type: array
+        description: An array of strings describing breakdown set values. Values can be mapped to dimension_keys
+        items:
+          type: string
+      value:
+        type: integer
+        description: Sum of breakdown set values
+  Paging:
+    type: object
+    description: An object containing URLs used to request the next set of results
+    properties:
+      previous:
+        type: string
+        description: URL to retrieve the previous page of results
+      next:
+        type: string
+        description: URL to retrieve the next page of results
