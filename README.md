@@ -16,11 +16,24 @@ This project provides a comprehensive Swagger/OpenAPI 2.0 specification for Inst
 ## API Coverage
 
 The specification covers:
-- **Media Insights Endpoint**: Get insights data on Instagram Media objects (Feed posts, Reels, Stories)
+
+### Media Insights Endpoint
+Get insights data on Instagram Media objects (Feed posts, Reels, Stories):
 - **Available Metrics**: Comments, likes, shares, reach, impressions, views, engagement metrics, and more
 - **Time Periods**: Support for day, week, 28-day, month, lifetime, and total_over_range periods
 - **Breakdowns**: Action type and navigation action type breakdowns
+
+### Account Insights Endpoint
+Get insights data on Instagram business or creator accounts:
+- **Interaction Metrics**: accounts_engaged, comments, likes, reach, shares, views, total_interactions, profile_links_taps, and more
+- **Demographic Metrics**: engaged_audience_demographics, follower_demographics with age, city, country, and gender breakdowns
+- **Time Periods**: Support for day and lifetime periods
+- **Breakdowns**: media_product_type, follow_type, contact_button_type breakdowns
+- **Time Ranges**: Support for since/until parameters and timeframe specifications
+
+### General Features
 - **Error Handling**: Comprehensive error response schemas
+- **Authentication**: Instagram Graph API access token support
 
 ## Usage
 
