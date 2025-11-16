@@ -1,0 +1,45 @@
+name: Validate Swagger Specs
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'v*/**.yaml'
+      - '.github/workflows/validate-swagger.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'v*/**.yaml'
+      - '.github/workflows/validate-swagger.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install swagger-cli
+      run: npm install -g @apidevtools/swagger-cli
+
+    - name: Validate account swagger spec
+      run: |
+        echo "Validating account/swagger.yaml..."
+        swagger-cli validate v24.0/account/swagger.yaml
+        echo "✓ account/swagger.yaml is valid"
+
+    - name: Validate media swagger spec
+      run: |
+        echo "Validating media/swagger.yaml..."
+        swagger-cli validate v24.0/media/swagger.yaml
+        echo "✓ media/swagger.yaml is valid"
+
+    - name: Validation successful
+      run: |
+        echo "All Swagger specifications are valid!"
