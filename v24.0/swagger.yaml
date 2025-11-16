@@ -20,6 +20,53 @@ securityDefinitions:
 security:
   - access_token: []
 paths:
+  /{instagram_account_id}/insights:
+    get:
+      summary: Get insights data on an Instagram Account.
+      description: |
+        Get insights data on your app user's Instagram business or creator account.
+        
+        The following metrics have been deprecated for v22.0 and will be deprecated for all versions on April 21, 2025:
+        - impressions
+        
+        Introducing the new views metric with total_value metric type and with breakdowns for follower_type and media_product_type.
+        
+        Limitations:
+        - follower_count and online_followers metrics are not available on Instagram business or creator accounts with fewer than 100 followers.
+        - Insights data for the online_followers metric is only available for the last 30 days.
+        - If insights data you are requesting does not exist or is currently unavailable, the API returns an empty data set instead of 0 for individual metrics.
+        - Demographic metrics only return the top 45 performers.
+        - Only viewers for whom we have demographic data are used in demographic metric calculations.
+        - Summing demographic metric values may result in a value less than the follower count.
+        - Data used to calculate metrics may be delayed up to 48 hours.
+      tags:
+        - insights
+      operationId: GetInsightsByAccountID
+      parameters:
+        - $ref: '#/parameters/instagramAccountId'
+        - $ref: '#/parameters/accountMetric'
+        - $ref: '#/parameters/accountPeriod'
+        - $ref: '#/parameters/accountMetricType'
+        - $ref: '#/parameters/accountBreakdown'
+        - $ref: '#/parameters/timeframe'
+        - $ref: '#/parameters/since'
+        - $ref: '#/parameters/until'
+        - $ref: '#/parameters/requestId'
+      responses:
+        '200':
+          description: Return matched Instagram Account insights.
+          schema:
+            $ref: '#/definitions/InstagramAccountInsights'
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '403':
+          $ref: '#/responses/403'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
   /{instagram_media_id}/insights:
     get:
       summary: Get insights data on an Instagram Media object.
@@ -103,10 +150,39 @@ parameters:
     type: boolean
     required: false
     default: false
+  instagramAccountId:
+    name: instagram_account_id
+    in: path
+    description: Instagram Account ID (your app user's Instagram professional account ID)
+    required: true
+    type: string
   instagramMediaId:
     name: instagram_media_id
     in: path
     description: Instagram Media ID
+    required: true
+    type: string
+  accountMetric:
+    name: metric
+    in: query
+    description: |
+      Required. Comma-separated list of metrics you want returned. Available metrics include:
+      
+      Interaction Metrics:
+      - accounts_engaged (day period, total_value metric type)
+      - comments (day period, total_value metric type, media_product_type breakdown)
+      - engaged_audience_demographics (lifetime period, total_value metric type, age/city/country/gender breakdowns)
+      - follows_and_unfollows (day period, total_value metric type, follow_type breakdown)
+      - follower_demographics (lifetime period, total_value metric type, age/city/country/gender breakdowns)
+      - impressions (day period, total_value/time_series metric type) - DEPRECATED for v22.0+
+      - likes (day period, total_value metric type, media_product_type breakdown)
+      - profile_links_taps (day period, total_value metric type, contact_button_type breakdown)
+      - reach (day period, total_value/time_series metric type, media_product_type/follow_type breakdowns)
+      - replies (day period, total_value metric type)
+      - saved (day period, total_value metric type, media_product_type breakdown)
+      - shares (day period, total_value metric type, media_product_type breakdown)
+      - total_interactions (day period, total_value metric type, media_product_type breakdown)
+      - views (day period, total_value metric type, follower_type/media_product_type breakdowns)
     required: true
     type: string
   metric:
@@ -165,6 +241,69 @@ parameters:
       - time_series
     required: false
     type: string
+  accountPeriod:
+    name: period
+    in: query
+    description: |
+      Required. Period aggregation. Values can be:
+      - day (for interaction metrics)
+      - lifetime (for demographic metrics)
+    required: true
+    type: string
+  accountMetricType:
+    name: metric_type
+    in: query
+    description: |
+      Designates if you want the responses aggregated by time period or as a simple total. Values can be:
+      - time_series (aggregate results by time period)
+      - total_value (return results as a simple total, with breakdowns if requested)
+    required: false
+    type: string
+  accountBreakdown:
+    name: breakdown
+    in: query
+    description: |
+      Designates how to break down result set into subsets. Values can be:
+      - contact_button_type (divides results by profile component: BOOK_NOW, CALL, DIRECTION, EMAIL, INSTANT_EXPERIENCE, TEXT, UNDEFINED)
+      - follow_type (breaks down by followers or non-followers: FOLLOWER, NON_FOLLOWER, UNKNOWN)
+      - media_product_type (breaks down by surface: AD, FEED, REELS, STORY)
+      - age (for demographic metrics)
+      - city (for demographic metrics)
+      - country (for demographic metrics)
+      - gender (for demographic metrics)
+      
+      Only compatible with metric_type=total_value. See metric descriptions for compatible breakdowns.
+    required: false
+    type: string
+  timeframe:
+    name: timeframe
+    in: query
+    description: |
+      Required for demographics-related metrics. Designates how far to look back for data. Values can be:
+      - last_14_days (deprecated beginning with v20.0)
+      - last_30_days (deprecated beginning with v20.0)
+      - last_90_days (deprecated beginning with v20.0)
+      - prev_month (deprecated beginning with v20.0)
+      - this_month (returns data in the last 30 days)
+      - this_week (returns data in the last 7 days)
+      
+      This parameter overrides since and until parameters.
+    required: false
+    type: string
+  since:
+    name: since
+    in: query
+    description: Unix timestamp indicating start of range. The API will only include data created within this range (inclusive). If not included, API looks back 24 hours.
+    required: false
+    type: integer
+    format: int64
+  until:
+    name: until
+    in: query
+    description: Unix timestamp indicating end of range. The API will only include data created within this range (inclusive). If not included, API looks back 24 hours.
+    required: false
+    type: integer
+    format: int64
 
 responses:
   '200':
@@ -278,6 +417,89 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Error'
+  InstagramAccountInsights:
+    type: object
+    properties:
+      data:
+        type: array
+        description: An array containing objects describing your request results
+        items:
+          $ref: '#/definitions/AccountInsightData'
+      paging:
+        $ref: '#/definitions/Paging'
+  AccountInsightData:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Metric name
+      period:
+        type: string
+        description: Period requested (day or lifetime)
+      title:
+        type: string
+        description: Metric title
+      description:
+        type: string
+        description: Metric description
+      total_value:
+        $ref: '#/definitions/AccountTotalValue'
+      values:
+        type: array
+        description: An array containing objects describing requested metric values (for time_series)
+        items:
+          $ref: '#/definitions/AccountMetricValue'
+      id:
+        type: string
+        description: A string describing the query's path parameters
+  AccountTotalValue:
+    type: object
+    description: Object describing requested metric and breakdown values
+    properties:
+      value:
+        type: integer
+        description: Sum of requested metric values
+      breakdowns:
+        type: array
+        description: An array of objects describing the breakdowns requested and their results
+        items:
+          $ref: '#/definitions/AccountBreakdown'
+  AccountBreakdown:
+    type: object
+    properties:
+      dimension_keys:
+        type: array
+        description: Array of strings describing breakdowns requested
+        items:
+          type: string
+      results:
+        type: array
+        description: An array of objects describing each breakdown set
+        items:
+          $ref: '#/definitions/AccountBreakdownResult'
+  AccountBreakdownResult:
+    type: object
+    properties:
+      dimension_values:
+        type: array
+        description: An array of strings describing breakdown set values (can be mapped to dimension_keys)
+        items:
+          type: string
+      value:
+        type: integer
+        description: Sum of breakdown set values
+      end_time:
+        type: string
+        description: ISO 8601 timestamp with time and offset (e.g., 2022-08-01T07:00:00+0000)
+  AccountMetricValue:
+    type: object
+    properties:
+      value:
+        type: integer
+        description: Metric value for the time period
+      end_time:
+        type: string
+        description: ISO 8601 timestamp indicating end of the time period
   Error:
     description: a model for all the error response coming from harbor
     type: object
