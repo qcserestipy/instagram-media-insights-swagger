@@ -20,6 +20,69 @@ securityDefinitions:
 security:
   - access_token: []
 paths:
+  /{instagram_media_id}:
+    get:
+      summary: Get fields and edges on Instagram media.
+      description: |
+        Gets fields and edges on Instagram media (album, photo, video, reel, or story).
+        
+        Limitations:
+        - Fields that return aggregated values don't include ads-driven data.
+        - Captions don't include the @ symbol unless the app user can perform admin-equivalent tasks.
+        - Some fields, such as permalink, cannot be used on photos within albums (children).
+        - Live video Instagram Media can only be read while they are being broadcast.
+        - This API returns only data for media owned by Instagram professional accounts, not personal accounts.
+      tags:
+        - media
+      operationId: GetMediaByID
+      parameters:
+        - $ref: '#/parameters/instagramMediaId'
+        - $ref: '#/parameters/fields'
+        - $ref: '#/parameters/requestId'
+      responses:
+        '200':
+          description: Return Instagram media object with requested fields.
+          schema:
+            $ref: '#/definitions/InstagramMediaObject'
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '403':
+          $ref: '#/responses/403'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
+    post:
+      summary: Enable or disable comments on an Instagram Media.
+      description: |
+        Enable or disable comments on an Instagram Media.
+        
+        Limitations:
+        - Live video Instagram Media not supported.
+      tags:
+        - media
+      operationId: UpdateMediaComments
+      parameters:
+        - $ref: '#/parameters/instagramMediaId'
+        - $ref: '#/parameters/commentEnabled'
+        - $ref: '#/parameters/requestId'
+      responses:
+        '200':
+          description: Comments enabled/disabled successfully.
+          schema:
+            $ref: '#/definitions/Success'
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '403':
+          $ref: '#/responses/403'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
   /{instagram_media_id}/comments:
     get:
       summary: Get comments on an Instagram Media object.
@@ -173,6 +236,18 @@ parameters:
     description: Instagram Media ID
     required: true
     type: string
+  fields:
+    name: fields
+    in: query
+    description: Comma-separated list of fields you want returned (e.g., id,media_type,media_url,caption,timestamp,username,like_count,comments_count)
+    required: false
+    type: string
+  commentEnabled:
+    name: comment_enabled
+    in: query
+    description: Required. Set to true to enable comments or false to disable comments.
+    required: true
+    type: boolean
   commentMessage:
     name: message
     in: query
@@ -384,6 +459,75 @@ definitions:
       id:
         type: string
         description: ID of the created comment
+  InstagramMediaObject:
+    type: object
+    description: Instagram media object with requested fields
+    properties:
+      id:
+        type: string
+        description: Media ID
+      media_type:
+        type: string
+        description: Media type (CAROUSEL_ALBUM, IMAGE, or VIDEO)
+        enum: [CAROUSEL_ALBUM, IMAGE, VIDEO]
+      media_url:
+        type: string
+        description: URL for the media
+      caption:
+        type: string
+        description: Caption text
+      alt_text:
+        type: string
+        description: Descriptive text for images, for accessibility
+      timestamp:
+        type: string
+        description: ISO 8601-formatted creation date in UTC
+      username:
+        type: string
+        description: Username of user who created the media
+      owner:
+        type: object
+        description: Instagram user ID who created the media
+        properties:
+          id:
+            type: string
+      permalink:
+        type: string
+        description: Permanent URL to the media
+      shortcode:
+        type: string
+        description: Shortcode to the media
+      thumbnail_url:
+        type: string
+        description: Media thumbnail URL (VIDEO media only)
+      comments_count:
+        type: integer
+        description: Count of comments on the media
+      like_count:
+        type: integer
+        description: Count of likes on the media
+      view_count:
+        type: integer
+        description: View count for Instagram reels
+      is_comment_enabled:
+        type: boolean
+        description: Indicates if comments are enabled or disabled
+      is_shared_to_feed:
+        type: boolean
+        description: For Reels only - indicates if reel can appear in Feed and Reels tabs
+      media_product_type:
+        type: string
+        description: Surface where media is published (AD, FEED, STORY, REELS)
+        enum: [AD, FEED, STORY, REELS]
+      legacy_instagram_media_id:
+        type: string
+        description: ID for Instagram media created for Marketing API endpoints v21.0 and older
+  Success:
+    type: object
+    properties:
+      success:
+        type: boolean
+        description: Indicates if the operation was successful
   InstagramMediaInsights:
     type: object
     properties:
