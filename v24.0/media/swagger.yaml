@@ -20,6 +20,70 @@ securityDefinitions:
 security:
   - access_token: []
 paths:
+  /{instagram_media_id}/comments:
+    get:
+      summary: Get comments on an Instagram Media object.
+      description: |
+        Returns a list of IG Comments on an IG Media object.
+        
+        Limitations:
+        - Requests made using API version 3.1 or older will have results returned in chronological order. Requests made using version 3.2+ will have results returned in reverse chronological order.
+        - Returns only top-level comments. Replies to comments are not included unless you use field expansion to request the replies field.
+        - Returns a maximum of 50 comments per query.
+        - Comments cannot be filtered by timestamp.
+        - Comments on live video IG Media are not supported.
+        
+        Note: Non-organic comments (comments on Ads containing IG Media) are not supported. Use the Marketing API to get non-organic comments.
+      tags:
+        - comments
+      operationId: GetCommentsByMediaID
+      parameters:
+        - $ref: '#/parameters/instagramMediaId'
+        - $ref: '#/parameters/requestId'
+      responses:
+        '200':
+          description: Return list of comments on the media object.
+          schema:
+            $ref: '#/definitions/InstagramComments'
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '403':
+          $ref: '#/responses/403'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
+    post:
+      summary: Create a comment on an Instagram Media object.
+      description: |
+        Creates an IG Comment on an IG Media object.
+        
+        Limitations:
+        - Comments on live video IG Media are not supported.
+      tags:
+        - comments
+      operationId: CreateCommentOnMedia
+      parameters:
+        - $ref: '#/parameters/instagramMediaId'
+        - $ref: '#/parameters/commentMessage'
+        - $ref: '#/parameters/requestId'
+      responses:
+        '200':
+          description: Comment created successfully.
+          schema:
+            $ref: '#/definitions/CommentCreated'
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '403':
+          $ref: '#/responses/403'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
   /{instagram_media_id}/insights:
     get:
       summary: Get insights data on an Instagram Media object.
@@ -107,6 +171,12 @@ parameters:
     name: instagram_media_id
     in: path
     description: Instagram Media ID
+    required: true
+    type: string
+  commentMessage:
+    name: message
+    in: query
+    description: Required. The text to be included in the comment.
     required: true
     type: string
   metric:
@@ -288,6 +358,32 @@ definitions:
       message:
         type: string
         description: The error message
+  InstagramComments:
+    type: object
+    properties:
+      data:
+        type: array
+        description: An array containing comment objects
+        items:
+          $ref: '#/definitions/CommentData'
+  CommentData:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Comment ID
+      text:
+        type: string
+        description: Comment text
+      timestamp:
+        type: string
+        description: ISO 8601 formatted timestamp of when the comment was created
+  CommentCreated:
+    type: object
+    properties:
+      id:
+        type: string
+        description: ID of the created comment
   InstagramMediaInsights:
     type: object
     properties:
