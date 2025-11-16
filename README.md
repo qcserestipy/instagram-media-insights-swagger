@@ -52,7 +52,7 @@ You can generate API clients for any programming language using tools like:
 ### Example: Go Client Implementation
 
 A complete Go client implementation based on this specification is available at:
-**[https://github.com/qcserestipy/instagram-media-insights-go-client](https://github.com/qcserestipy/instagram-media-insights-go-client)**
+**[https://github.com/qcserestipy/instagram-api-go-client](https://github.com/qcserestipy/instagram-api-go-client)**
 
 This serves as a reference implementation demonstrating how to generate and use a type-safe client. In principle, anyone can generate clients for their preferred language (Python, Java, JavaScript, Ruby, PHP, etc.) using the same Swagger specification.
 
