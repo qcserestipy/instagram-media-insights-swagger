@@ -20,6 +20,85 @@ securityDefinitions:
 security:
   - access_token: []
 paths:
+  /{instagram_account_id}/media:
+    get:
+      summary: Get all IG Media on an IG User.
+      description: |
+        Get all IG Media on an IG User.
+        
+        Limitations:
+        - Returns a maximum of 10K of the most recently created media.
+        - Story IG Media not supported, use the GET /{instagram_account_id}/stories endpoint instead.
+      tags:
+        - media
+      operationId: GetMediaByUserID
+      parameters:
+        - $ref: '#/parameters/instagramAccountId'
+        - $ref: '#/parameters/since'
+        - $ref: '#/parameters/until'
+        - $ref: '#/parameters/requestId'
+      responses:
+        '200':
+          description: Return list of media objects.
+          schema:
+            $ref: '#/definitions/InstagramMedia'
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '403':
+          $ref: '#/responses/403'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
+    post:
+      summary: Create an IG Container for publishing.
+      description: |
+        Create an image, carousel, story or reel IG Container for use in the post publishing process.
+        
+        Limitations:
+        - Containers expire after 24 hours
+        - An Instagram account can only create 400 containers within a rolling 24 hour period
+        - Reels cannot appear in carousels
+        - Stories expire after 24 hours
+      tags:
+        - media
+      operationId: CreateMediaContainer
+      parameters:
+        - $ref: '#/parameters/instagramAccountId'
+        - $ref: '#/parameters/imageUrl'
+        - $ref: '#/parameters/videoUrl'
+        - $ref: '#/parameters/mediaType'
+        - $ref: '#/parameters/caption'
+        - $ref: '#/parameters/altText'
+        - $ref: '#/parameters/isCarouselItem'
+        - $ref: '#/parameters/locationId'
+        - $ref: '#/parameters/userTags'
+        - $ref: '#/parameters/productTags'
+        - $ref: '#/parameters/collaborators'
+        - $ref: '#/parameters/children'
+        - $ref: '#/parameters/coverUrl'
+        - $ref: '#/parameters/audioName'
+        - $ref: '#/parameters/thumbOffset'
+        - $ref: '#/parameters/shareToFeed'
+        - $ref: '#/parameters/uploadType'
+        - $ref: '#/parameters/requestId'
+      responses:
+        '200':
+          description: Container created successfully.
+          schema:
+            $ref: '#/definitions/MediaContainerCreated'
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '403':
+          $ref: '#/responses/403'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
   /{instagram_account_id}/stories:
     get:
       summary: Get stories for an Instagram User.
@@ -200,6 +279,110 @@ parameters:
     required: false
     type: integer
     format: int64
+  imageUrl:
+    name: image_url
+    in: query
+    description: Required for images. The path to the image. We will cURL the image using the URL that you specify so the image must be on a public server.
+    required: false
+    type: string
+  videoUrl:
+    name: video_url
+    in: query
+    description: Required for videos and reels. Path to the video. We cURL the video using the passed-in URL, so it must be on a public server.
+    required: false
+    type: string
+  mediaType:
+    name: media_type
+    in: query
+    description: |
+      Required for carousels, stories, and reels. Indicates container is for a carousel, story or reel. Values:
+      - CAROUSEL
+      - REELS
+      - STORIES
+    required: false
+    type: string
+    enum: [CAROUSEL, REELS, STORIES]
+  caption:
+    name: caption
+    in: query
+    description: A caption for the image, video, or carousel. Maximum 2200 characters, 30 hashtags, and 20 @ tags. Not supported on images or videos in carousels.
+    required: false
+    type: string
+  altText:
+    name: alt_text
+    in: query
+    description: For image posts only. Alternative text, up to 1000 characters. Only supported on single images or images in a carousel. Reels and stories not supported.
+    required: false
+    type: string
+  isCarouselItem:
+    name: is_carousel_item
+    in: query
+    description: Applies only to images and videos. Set to true to indicate image or video appears in a carousel.
+    required: false
+    type: boolean
+  locationId:
+    name: location_id
+    in: query
+    description: The ID of a Page associated with a location to tag the media with. Not supported on images or videos in carousels.
+    required: false
+    type: string
+  userTags:
+    name: user_tags
+    in: query
+    description: |
+      Array of public usernames and x/y coordinates for tagging Instagram users. Format: [{"username":"user1","x":0.5,"y":0.8}]
+    required: false
+    type: string
+  productTags:
+    name: product_tags
+    in: query
+    description: |
+      Array of product tags (max 5). Format: [{"product_id":"123","x":0.5,"y":0.8}]
+    required: false
+    type: string
+  collaborators:
+    name: collaborators
+    in: query
+    description: For Feed images, Reels, and Carousels only. List of up to 3 Instagram usernames as collaborators. Format ["username1","username2"]
+    required: false
+    type: string
+  children:
+    name: children
+    in: query
+    description: Required for carousels. Array of up to 10 container IDs for carousel items.
+    required: false
+    type: string
+  coverUrl:
+    name: cover_url
+    in: query
+    description: For Reels only. Path to an image to use as the cover image for the Reels tab.
+    required: false
+    type: string
+  audioName:
+    name: audio_name
+    in: query
+    description: For Reels only. Name of the audio of your Reels media.
+    required: false
+    type: string
+  thumbOffset:
+    name: thumb_offset
+    in: query
+    description: For videos and reels. Location in milliseconds of the frame to be used as cover thumbnail. Default is 0.
+    required: false
+    type: integer
+  shareToFeed:
+    name: share_to_feed
+    in: query
+    description: For Reels only. When true, reel can appear in both Feed and Reels tabs. When false, only in Reels tab.
+    required: false
+    type: boolean
+  uploadType:
+    name: upload_type
+    in: query
+    description: Set to "resumable" for resumable upload protocol.
+    required: false
+    type: string
+    enum: [resumable]
 
 responses:
   '200':
@@ -322,6 +505,29 @@ definitions:
       id:
         type: string
         description: Instagram Media ID for the story
+  InstagramMedia:
+    type: object
+    properties:
+      data:
+        type: array
+        description: An array containing media object IDs
+        items:
+          $ref: '#/definitions/MediaItem'
+  MediaItem:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Instagram Media ID
+  MediaContainerCreated:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Instagram Container ID
+      uri:
+        type: string
+        description: URI for resumable upload (only returned for resumable upload type)
   InstagramAccountInsights:
     type: object
     properties:
