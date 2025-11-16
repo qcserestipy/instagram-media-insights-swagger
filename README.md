@@ -4,7 +4,11 @@ OpenAPI/Swagger specification for the Instagram Media Insights API, enabling dev
 
 ## Overview
 
-This project provides a comprehensive Swagger/OpenAPI 2.0 specification for Instagram's Media Insights API. The specification describes endpoints, request parameters, response schemas, and authentication mechanisms for retrieving insights data on Instagram media objects.
+This project provides comprehensive Swagger/OpenAPI 2.0 specifications for Instagram's Insights APIs. The specifications describe endpoints, request parameters, response schemas, and authentication mechanisms for retrieving insights data on Instagram media objects and accounts.
+
+**Two separate specifications are provided:**
+- `swagger.yaml` - Media Insights API (insights on posts, reels, stories)
+- `swagger-account.yaml` - Account Insights API (insights on Instagram business/creator accounts)
 
 ## Features
 
@@ -59,10 +63,12 @@ This serves as a reference implementation demonstrating how to generate and use 
 
 ## Getting Started
 
-1. **Review the Specification**: Check the `v24.0/swagger.yaml` file
+1. **Review the Specifications**: 
+   - Check `v24.0/swagger.yaml` for media insights
+   - Check `v24.0/swagger-account.yaml` for account insights
 2. **Generate a Client**: Use Swagger Codegen or OpenAPI Generator for your language
 3. **Obtain Access Token**: Get an Instagram Graph API access token from Facebook Developer Portal
-4. **Start Making Requests**: Use your generated client to fetch Instagram media insights
+4. **Start Making Requests**: Use your generated client to fetch Instagram insights
 
 ## Authentication
 
