@@ -20,6 +20,38 @@ securityDefinitions:
 security:
   - access_token: []
 paths:
+  /{instagram_account_id}/stories:
+    get:
+      summary: Get stories for an Instagram User.
+      description: |
+        Returns a list of story IG Media objects on an IG User.
+        
+        Limitations:
+        - Responses will not include Live Video stories.
+        - Stories are only available for 24 hours.
+        - New stories created when a user reshares a story will not be returned.
+        - Only one caption will be returned per Instagram story, even if more than one caption exists.
+      tags:
+        - stories
+      operationId: GetStoriesByUserID
+      parameters:
+        - $ref: '#/parameters/instagramAccountId'
+        - $ref: '#/parameters/requestId'
+      responses:
+        '200':
+          description: Return list of story media objects.
+          schema:
+            $ref: '#/definitions/InstagramStories'
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '403':
+          $ref: '#/responses/403'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
   /{instagram_account_id}/insights:
     get:
       summary: Get insights data on an Instagram Account.
@@ -276,6 +308,20 @@ definitions:
       message:
         type: string
         description: The error message
+  InstagramStories:
+    type: object
+    properties:
+      data:
+        type: array
+        description: An array containing story media object IDs
+        items:
+          $ref: '#/definitions/StoryMediaItem'
+  StoryMediaItem:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Instagram Media ID for the story
   InstagramAccountInsights:
     type: object
     properties:
