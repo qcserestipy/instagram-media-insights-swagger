@@ -16,7 +16,7 @@ securityDefinitions:
     type: apiKey
     name: access_token
     in: query
-    description: Instagram Graph API Page access token. See https://developers.facebook.com/docs/facebook-login/guides/access-tokens/#pagetokens.
+    description: Instagram Graph API Page access token. See https://developers.facebook.com/docs/facebook-login/guides/access-tokens/#pagetokens and https://developers.facebook.com/docs/facebook-login/guides/access-tokens#portabletokens.
 security:
   - access_token: []
 paths:
