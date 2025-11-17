@@ -4,11 +4,12 @@ OpenAPI/Swagger specification for the Instagram Media Insights API, enabling dev
 
 ## Overview
 
-This project provides comprehensive Swagger/OpenAPI 2.0 specifications for Instagram's Insights APIs. The specifications describe endpoints, request parameters, response schemas, and authentication mechanisms for retrieving insights data on Instagram media objects and accounts.
+This project provides comprehensive Swagger/OpenAPI 2.0 specifications for Instagram's APIs. The specifications describe endpoints, request parameters, response schemas, and authentication mechanisms for retrieving insights data on Instagram media objects and accounts, as well as managing access tokens.
 
-**Two separate specifications are provided:**
-- `swagger.yaml` - Media Insights API (insights on posts, reels, stories)
-- `swagger-account.yaml` - Account Insights API (insights on Instagram business/creator accounts)
+**Three separate specifications are provided:**
+- `media/swagger.yaml` - Media Insights API (insights on posts, reels, stories, comments)
+- `account/swagger.yaml` - Account Insights API (insights on Instagram business/creator accounts, stories, media management)
+- `access/swagger.yaml` - Access Token API (exchange short-lived tokens for long-lived tokens)
 
 ## Features
 
@@ -35,6 +36,11 @@ Get insights data on Instagram business or creator accounts:
 - **Breakdowns**: media_product_type, follow_type, contact_button_type breakdowns
 - **Time Ranges**: Support for since/until parameters and timeframe specifications
 
+### Access Token API
+Exchange short-lived Instagram User access tokens for long-lived tokens:
+- **Token Exchange**: Convert 1-hour tokens to 60-day tokens
+- **Security**: Server-side only operations with app secret
+
 ### General Features
 - **Error Handling**: Comprehensive error response schemas
 - **Authentication**: Instagram Graph API access token support
@@ -45,8 +51,8 @@ Get insights data on Instagram business or creator accounts:
 
 You can generate API clients for any programming language using tools like:
 
-- **Swagger Codegen**: `swagger-codegen generate -i v24.0/swagger.yaml -l <language>`
-- **OpenAPI Generator**: `openapi-generator generate -i v24.0/swagger.yaml -g <language>`
+- **Swagger Codegen**: `swagger-codegen generate -i v24.0/media/swagger.yaml -l <language>`
+- **OpenAPI Generator**: `openapi-generator generate -i v24.0/account/swagger.yaml -g <language>`
 - **Online Editor**: Import the spec at [editor.swagger.io](https://editor.swagger.io)
 
 ### Example: Go Client Implementation
@@ -64,11 +70,13 @@ This serves as a reference implementation demonstrating how to generate and use 
 ## Getting Started
 
 1. **Review the Specifications**: 
-   - Check `v24.0/swagger.yaml` for media insights
-   - Check `v24.0/swagger-account.yaml` for account insights
+   - Check `v24.0/media/swagger.yaml` for media insights and comments
+   - Check `v24.0/account/swagger.yaml` for account insights, stories, and media management
+   - Check `v24.0/access/swagger.yaml` for access token exchange
 2. **Generate a Client**: Use Swagger Codegen or OpenAPI Generator for your language
 3. **Obtain Access Token**: Get an Instagram Graph API access token from Facebook Developer Portal
-4. **Start Making Requests**: Use your generated client to fetch Instagram insights
+4. **Exchange for Long-Lived Token**: Use the access token API to get a 60-day token
+5. **Start Making Requests**: Use your generated client to fetch Instagram insights
 
 ## Authentication
 

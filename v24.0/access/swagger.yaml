@@ -1,0 +1,115 @@
+swagger: '2.0'
+info:
+  title: Instagram Access Token API
+  description: These APIs provide services for exchanging short-lived Instagram User access tokens for long-lived tokens.
+  version: '2.4.0'
+host: graph.instagram.com 
+schemes:
+  - https
+basePath: /
+produces:
+  - application/json
+consumes:
+  - application/json
+paths:
+  /access_token:
+    get:
+      summary: Exchange short-lived access token for long-lived token.
+      description: |
+        Exchange a short-lived Instagram User access token (expires in 1 hour) for a long-lived Instagram User access token (expires in 60 days).
+        
+        Limitations:
+        - Requests for long-lived tokens include your app secret so should only be made in server-side code, never in client-side code or in an app binary that could be decompiled.
+        - Do not share your app secret with anyone, expose it in code, send it to a client, or store it in a device.
+      tags:
+        - access_token
+      operationId: ExchangeAccessToken
+      parameters:
+        - $ref: '#/parameters/grantType'
+        - $ref: '#/parameters/clientSecret'
+        - $ref: '#/parameters/accessToken'
+      responses:
+        '200':
+          description: Successfully exchanged for long-lived token.
+          schema:
+            $ref: '#/definitions/LongLivedToken'
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '403':
+          $ref: '#/responses/403'
+        '500':
+          $ref: '#/responses/500'
+
+parameters:
+  grantType:
+    name: grant_type
+    in: query
+    description: Required. Set this to ig_exchange_token
+    required: true
+    type: string
+    enum: [ig_exchange_token]
+  clientSecret:
+    name: client_secret
+    in: query
+    description: Required. Your Instagram app's secret from App Dashboard > Products > Instagram > Basic Display > Instagram App Secret field.
+    required: true
+    type: string
+  accessToken:
+    name: access_token
+    in: query
+    description: Required. The valid (unexpired) short-lived Instagram User Access Token that you want to exchange for a long-lived token.
+    required: true
+    type: string
+
+responses:
+  '200':
+    description: Success
+  '400':
+    description: Bad request
+    schema:
+      $ref: '#/definitions/Error'
+  '401':
+    description: Unauthorized
+    schema:
+      $ref: '#/definitions/Error'
+  '403':
+    description: Forbidden
+    schema:
+      $ref: '#/definitions/Error'
+  '500':
+    description: Internal server error
+    schema:
+      $ref: '#/definitions/Error'
+
+definitions:
+  LongLivedToken:
+    type: object
+    properties:
+      access_token:
+        type: string
+        description: The new, long-lived Instagram User access token (numeric string)
+      token_type:
+        type: string
+        description: Set to "bearer"
+        enum: [bearer]
+      expires_in:
+        type: integer
+        description: Number of seconds until the token expires (60 days = 5184000 seconds)
+  Error:
+    description: Error response
+    type: object
+    properties:
+      error:
+        type: object
+        properties:
+          message:
+            type: string
+            description: Error message
+          type:
+            type: string
+            description: Error type
+          code:
+            type: integer
+            description: Error code
