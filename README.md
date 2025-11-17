@@ -9,7 +9,7 @@ This project provides comprehensive Swagger/OpenAPI 2.0 specifications for Insta
 **Three separate specifications are provided:**
 - `media/swagger.yaml` - Media Insights API (insights on posts, reels, stories, comments)
 - `account/swagger.yaml` - Account Insights API (insights on Instagram business/creator accounts, stories, media management)
-- `access/swagger.yaml` - Access Token API (exchange short-lived tokens for long-lived tokens)
+- `page/swagger.yaml` - Facebook Page API (retrieve page access tokens from Facebook Graph API)
 
 ## Features
 
@@ -36,10 +36,10 @@ Get insights data on Instagram business or creator accounts:
 - **Breakdowns**: media_product_type, follow_type, contact_button_type breakdowns
 - **Time Ranges**: Support for since/until parameters and timeframe specifications
 
-### Access Token API
-Exchange short-lived Instagram User access tokens for long-lived tokens:
-- **Token Exchange**: Convert 1-hour tokens to 60-day tokens
-- **Security**: Server-side only operations with app secret
+### Facebook Page API
+Retrieve page access tokens from Facebook Graph API:
+- **Page Access Tokens**: Get page access tokens to interact with Instagram Business Accounts
+- **Field Selection**: Request specific fields including access_token
 
 ### General Features
 - **Error Handling**: Comprehensive error response schemas
@@ -72,10 +72,10 @@ This serves as a reference implementation demonstrating how to generate and use 
 1. **Review the Specifications**: 
    - Check `v24.0/media/swagger.yaml` for media insights and comments
    - Check `v24.0/account/swagger.yaml` for account insights, stories, and media management
-   - Check `v24.0/access/swagger.yaml` for access token exchange
+   - Check `v24.0/page/swagger.yaml` for Facebook page access tokens
 2. **Generate a Client**: Use Swagger Codegen or OpenAPI Generator for your language
-3. **Obtain Access Token**: Get an Instagram Graph API access token from Facebook Developer Portal
-4. **Exchange for Long-Lived Token**: Use the access token API to get a 60-day token
+3. **Obtain Access Token**: Get a Facebook User access token from Facebook Developer Portal
+4. **Get Page Access Token**: Use the page API to retrieve your page access token
 5. **Start Making Requests**: Use your generated client to fetch Instagram insights
 
 ## Authentication

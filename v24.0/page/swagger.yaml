@@ -1,0 +1,113 @@
+swagger: '2.0'
+info:
+  title: Facebook Page API
+  description: These APIs provide services for retrieving page access tokens from Facebook Graph API.
+  version: '2.4.0'
+host: graph.facebook.com 
+schemes:
+  - https
+basePath: /v24.0
+produces:
+  - application/json
+consumes:
+  - application/json
+securityDefinitions:
+  access_token:
+    type: apiKey
+    name: access_token
+    in: query
+    description: Instagram Graph API Page access token. See https://developers.facebook.com/docs/facebook-login/guides/access-tokens/#pagetokens.
+security:
+  - access_token: []
+paths:
+  /{page_id}:
+    get:
+      summary: Get page access token from Facebook Graph API.
+      description: |
+        Retrieve page access token for a Facebook Page. This token can be used to access Instagram Business Account data.
+      tags:
+        - access_token
+      operationId: GetPageAccessToken
+      parameters:
+        - $ref: '#/parameters/pageId'
+        - $ref: '#/parameters/fields'
+      responses:
+        '200':
+          description: Successfully retrieved page access token.
+          schema:
+            $ref: '#/definitions/PageAccessToken'
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '403':
+          $ref: '#/responses/403'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
+
+parameters:
+  pageId:
+    name: page_id
+    in: path
+    description: Required. The Facebook Page ID.
+    required: true
+    type: string
+  fields:
+    name: fields
+    in: query
+    description: Required. Comma-separated list of fields to retrieve. Use "access_token" to get the page access token.
+    required: true
+    type: string
+
+responses:
+  '200':
+    description: Success
+  '400':
+    description: Bad request
+    schema:
+      $ref: '#/definitions/Error'
+  '401':
+    description: Unauthorized
+    schema:
+      $ref: '#/definitions/Error'
+  '403':
+    description: Forbidden
+    schema:
+      $ref: '#/definitions/Error'
+  '404':
+    description: Not found
+    schema:
+      $ref: '#/definitions/Error'
+  '500':
+    description: Internal server error
+    schema:
+      $ref: '#/definitions/Error'
+
+definitions:
+  PageAccessToken:
+    type: object
+    properties:
+      access_token:
+        type: string
+        description: The page access token
+      id:
+        type: string
+        description: The page ID
+  Error:
+    description: Error response
+    type: object
+    properties:
+      error:
+        type: object
+        properties:
+          message:
+            type: string
+            description: Error message
+          type:
+            type: string
+            description: Error type
+          code:
+            type: integer
+            description: Error code

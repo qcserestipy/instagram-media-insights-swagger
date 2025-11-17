@@ -40,11 +40,11 @@ jobs:
         swagger-cli validate v24.0/media/swagger.yaml
         echo "✓ media/swagger.yaml is valid"
 
-    - name: Validate access swagger spec
+    - name: Validate page swagger spec
       run: |
-        echo "Validating access/swagger.yaml..."
-        swagger-cli validate v24.0/access/swagger.yaml
-        echo "✓ access/swagger.yaml is valid"
+        echo "Validating page/swagger.yaml..."
+        swagger-cli validate v24.0/page/swagger.yaml
+        echo "✓ page/swagger.yaml is valid"
 
     - name: Validation successful
       run: |
