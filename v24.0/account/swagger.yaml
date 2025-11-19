@@ -20,6 +20,37 @@ securityDefinitions:
 security:
   - access_token: []
 paths:
+  /{instagram_account_id}:
+    get:
+      summary: Get fields and edges on an Instagram User.
+      description: |
+        Get fields and edges on an Instagram Business or Creator Account.
+        This endpoint returns the requested public fields and available edges for the targeted Instagram professional account.
+        
+        Edges available on an Instagram User include: media, stories, insights, mentions, tags, mentioned_media, mentioned_comment, business_discovery, and others depending on permissions.
+      tags:
+        - user
+      operationId: GetInstagramUserByID
+      parameters:
+        - $ref: '#/parameters/instagramAccountId'
+        - $ref: '#/parameters/fields'
+        - $ref: '#/parameters/requestId'
+      responses:
+        '200':
+          description: Return Instagram User object with requested fields.
+          schema:
+            $ref: '#/definitions/InstagramUser'
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '403':
+          $ref: '#/responses/403'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
+
   /{instagram_account_id}/media:
     get:
       summary: Get all IG Media on an IG User.
@@ -192,6 +223,12 @@ parameters:
     in: path
     description: Instagram Account ID (your app user's Instagram professional account ID)
     required: true
+    type: string
+  fields:
+    name: fields
+    in: query
+    description: Comma-separated list of fields to return for the IG User (e.g. id,username,biography,followers_count,media_count,profile_picture_url,website). Only requested fields will be returned.
+    required: false
     type: string
   accountMetric:
     name: metric
@@ -621,3 +658,47 @@ definitions:
       next:
         type: string
         description: URL to retrieve the next page of results
+
+  InstagramUser:
+    type: object
+    description: Instagram Business or Creator Account object. Fields returned depend on the `fields` query parameter.
+    properties:
+      id:
+        type: string
+        description: Instagram User ID
+      username:
+        type: string
+        description: Instagram username
+      name:
+        type: string
+        description: Display name
+      biography:
+        type: string
+        description: Public biography text
+      followers_count:
+        type: integer
+        description: Number of followers
+      follows_count:
+        type: integer
+        description: Number of accounts this user follows
+      media_count:
+        type: integer
+        description: Number of media objects
+      profile_picture_url:
+        type: string
+        description: URL to profile picture
+      website:
+        type: string
+        description: Website URL set on profile
+      is_published:
+        type: boolean
+        description: Whether the account is published
+      has_profile_pic:
+        type: boolean
+        description: Whether the account has a profile picture
+      legacy_instagram_user_id:
+        type: string
+        description: Legacy user id, if available
+      shopping_product_tag_eligibility:
+        type: string
+        description: Shopping product tag eligibility for the account
